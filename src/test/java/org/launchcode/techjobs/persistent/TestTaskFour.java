@@ -128,19 +128,13 @@ public class TestTaskFour extends AbstractTest {
      * Verifies that HomeController.processAddJobForm queries skillRepository and sets skills properly
      * */
     @Test
-    public void testProcessAddJobFormHandlesSkillsProperly(
-            @Mocked SkillRepository skillRepository,
-            @Mocked EmployerRepository employerRepository,
-            @Mocked JobRepository jobRepository,
-            @Mocked Job job,
-            @Mocked Errors errors)
-            throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+    public void testProcessAddJobFormHandlesSkillsProperly(@Mocked SkillRepository skillRepository, @Mocked EmployerRepository employerRepository, @Mocked JobRepository jobRepository, @Mocked Job job, @Mocked Errors errors) throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
         Class homeControllerClass = getClassByName("controllers.HomeController");
         Method processAddJobFormMethod = homeControllerClass.getMethod("processAddJobForm", Job.class, Errors.class, Model.class, int.class, List.class);
 
         new Expectations() {{
             skillRepository.findAllById((Iterable<Integer>) any);
-            job.setSkills(String.valueOf((List<Skill>) any));
+            job.setSkills((List<Skill>) any);
         }};
 
         Model model = new ExtendedModelMap();
@@ -195,7 +189,7 @@ public class TestTaskFour extends AbstractTest {
     @Test
     public void testListControllerListMethodSetsFormFieldData(@Mocked Model model, @Mocked SkillRepository skillRepository, @Mocked EmployerRepository employerRepository) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         Class listControllerClass = getClassByName("controllers.ListController");
-        ListController listController = new ListController(employerRepository, skillRepository);
+        ListController listController = new ListController();
 
         new Expectations() {{
             model.addAttribute("employers", any);
@@ -219,10 +213,7 @@ public class TestTaskFour extends AbstractTest {
     public void testSqlQuery() throws IOException {
         String queryFileContents = getFileContents("queries.sql");
 
-        Pattern queryPattern = Pattern.compile("SELECT\\s+\\*\\s+FROM\\s+skill" +
-                "\\s*(LEFT|INNER)?\\s+JOIN\\s+job_skills\\s+ON\\s+(skill.id\\s+=\\s+job_skills.skills_id|job_skills.skills_id\\s+=\\s+skill.id)" +
-                "(\\s*WHERE\\s+job_skills.jobs_id\\s+IS\\s+NOT\\s+NULL)?" +
-                "\\s*ORDER\\s+BY\\s+name\\s+ASC;", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
+        Pattern queryPattern = Pattern.compile("SELECT\\s+\\*\\s+FROM\\s+skill" + "\\s*(LEFT|INNER)?\\s+JOIN\\s+job_skills\\s+ON\\s+(skill.id\\s+=\\s+job_skills.skills_id|job_skills.skills_id\\s+=\\s+skill.id)" + "(\\s*WHERE\\s+job_skills.jobs_id\\s+IS\\s+NOT\\s+NULL)?" + "\\s*ORDER\\s+BY\\s+name\\s+ASC;", Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
         Matcher queryMatcher = queryPattern.matcher(queryFileContents);
         boolean queryFound = queryMatcher.find();
         assertTrue(queryFound, "Task 4 SQL query is incorrect. Test your query against your database to find the error.");
