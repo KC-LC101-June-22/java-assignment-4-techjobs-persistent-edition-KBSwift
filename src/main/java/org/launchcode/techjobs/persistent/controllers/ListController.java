@@ -37,6 +37,10 @@ public class ListController {
         columnChoices.put("skill", "Skill");
     }
 
+    public ListController(EmployerRepository employerRepository, SkillRepository skillRepository) {
+
+    }
+
     @RequestMapping("")
     public String list(Model model) {
 
